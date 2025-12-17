@@ -12,203 +12,139 @@ header{position:sticky;top:0;z-index:10;background:linear-gradient(135deg,#e6394
 header h1{margin:0;font-size:18px;letter-spacing:2px}
 .status{font-size:12px;margin-top:4px}
 .status.open{color:#2ecc71}.status.closed{color:#e74c3c}
-.container{padding:16px;padding-bottom:190px;max-width:1100px;margin:auto}
+.menu-btn{position:absolute;right:14px;top:14px;background:none;border:none;color:#fff;font-size:22px}
+.side-menu{position:fixed;top:0;right:-220px;width:220px;height:100%;background:#111;padding:60px 20px;display:flex;flex-direction:column;gap:20px;transition:.3s;z-index:50}
+.side-menu a{color:#fff;text-decoration:none;font-weight:600}
+.side-menu.active{right:0}
+.container{padding:16px;padding-bottom:200px;max-width:1100px;margin:auto}
 .section{margin-bottom:40px}
 .section h2{border-left:4px solid var(--secondary);padding-left:10px;font-size:18px}
 .items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
-.card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.45)}
+.card{background:var(--surface);border-radius:16px;overflow:hidden;box-shadow:0 10px 25px rgba(0,0,0,.45);cursor:pointer}
 .card img{width:100%;height:150px;object-fit:cover}
 .info{padding:14px;display:flex;flex-direction:column;gap:6px}
 .price{color:var(--secondary);font-weight:700}
-.qty{display:flex;align-items:center;gap:10px}
-.qty button{width:28px;height:28px;border-radius:50%;border:none;background:var(--secondary);font-weight:700}
-textarea,input,select{width:100%;border-radius:12px;border:1px solid #222;padding:10px;background:#111;color:#fff}
-textarea{resize:none;min-height:60px}
-.add{background:var(--primary);border:none;border-radius:12px;padding:10px;color:#fff;font-weight:600}
-.extras{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.extras label{display:flex;align-items:center;gap:8px;font-size:13px;background:#111;padding:8px;border-radius:10px;border:1px solid #222;cursor:pointer}
-.extras input{accent-color:var(--secondary)}
+.add{background:var(--primary);border:none;border-radius:12px;padding:10px;color:#fff;font-weight:600;cursor:pointer}
 .cart{position:fixed;bottom:0;left:0;width:100%;background:#000;padding:14px;border-top:1px solid #222}
 .cart-items{max-height:120px;overflow:auto;font-size:13px}
 .cart-item{border-bottom:1px solid #222;padding:6px 0}
 .total{font-weight:600;margin:6px 0}
-.send{background:var(--secondary);border:none;border-radius:14px;padding:12px;width:100%;font-weight:700}
-.admin h3{margin-top:0}
+.send{background:var(--secondary);border:none;border-radius:14px;padding:12px;width:100%;font-weight:700;cursor:pointer}
 /* MODAL PRODUTO */
-.product-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:50}
+.product-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:60}
 .product-box{position:absolute;bottom:0;width:100%;background:#000;border-radius:22px 22px 0 0;max-height:90%;overflow:auto;animation:up .3s}
 .product-box img{width:100%;height:220px;object-fit:cover}
 .product-content{padding:16px;display:flex;flex-direction:column;gap:12px}
 .product-header{display:flex;justify-content:space-between;align-items:center}
-.product-header h3{margin:0}
-.close-btn{background:none;border:none;color:#fff;font-size:22px}
+.close-btn{background:none;border:none;color:#fff;font-size:22px;cursor:pointer}
+.extras{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.extras label{display:flex;align-items:center;gap:8px;font-size:13px;background:#111;padding:8px;border-radius:10px;border:1px solid #222;cursor:pointer}
+textarea{width:100%;border-radius:12px;border:1px solid #222;padding:10px;background:#111;color:#fff;resize:none;min-height:60px}
+.qty{display:flex;align-items:center;gap:10px}
+.qty button{width:28px;height:28px;border-radius:50%;border:none;background:var(--secondary);font-weight:700;cursor:pointer}
 .product-footer{position:sticky;bottom:0;background:#000;padding:12px;border-top:1px solid #222}
 @keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
 </head>
 <body>
-
 <header>
+<button class="menu-btn" onclick="toggleMenu()">⋮</button>
 <h1>[ HAMBURGUERIA DO NEGO ]</h1>
 <div id="status" class="status"></div>
 </header>
 
+<nav id="sideMenu" class="side-menu">
+<a href="#cardapio" onclick="toggleMenu()">Cardápio</a>
+<a href="#pagamento" onclick="toggleMenu()">Pagamento</a>
+</nav>
+
 <div class="container">
+  <div class="section" id="cardapio">
+    <h2>Cardápio</h2>
+    <div class="items">
+      <div class="card" onclick="openProduct({name:'X-Burger',price:18,img:'https://images.unsplash.com/photo-1550547660-d9450f859349'})">
+        <img src="https://images.unsplash.com/photo-1550547660-d9450f859349" />
+        <div class="info"><strong>X-Burger</strong><span class="price">R$ 18,00</span>
+        <button class="add" onclick="event.stopPropagation();openProduct({name:'X-Burger',price:18,img:'https://images.unsplash.com/photo-1550547660-d9450f859349'})">Adicionar</button></div>
+      </div>
+    </div>
+  </div>
 
-<!-- CARDÁPIO -->
-<div class="section" id="cardapio">
-<h2>Cardápio</h2>
+  <div class="section" id="bebidas">
+    <h2>Bebidas</h2>
+    <div class="items">
+      <div class="card" onclick="addDrink('Refrigerante Lata',6)">
+        <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97" />
+        <div class="info"><strong>Refrigerante Lata</strong><span class="price">R$ 6,00</span>
+        <button class="add" onclick="event.stopPropagation();addDrink('Refrigerante Lata',6)">Adicionar</button></div>
+      </div>
+      <div class="card" onclick="addDrink('Refrigerante 2L',12)">
+        <img src="https://images.unsplash.com/photo-1581006852262-e4307cf6283a" />
+        <div class="info"><strong>Refrigerante 2L</strong><span class="price">R$ 12,00</span>
+        <button class="add" onclick="event.stopPropagation();addDrink('Refrigerante 2L',12)">Adicionar</button></div>
+      </div>
+      <div class="card" onclick="addDrink('Água',4)">
+        <img src="https://images.unsplash.com/photo-1559839914-17aae19cec71" />
+        <div class="info"><strong>Água</strong><span class="price">R$ 4,00</span>
+        <button class="add" onclick="event.stopPropagation();addDrink('Água',4)">Adicionar</button></div>
+      </div>
+    </div>
+  </div>
 
-<h3>Hambúrgueres</h3>
-<div class="items">
-<div class="card" onclick="openProduct({name:'X-Burger',price:18,img:'https://images.unsplash.com/photo-1550547660-d9450f859349'})">
-<img src="https://images.unsplash.com/photo-1550547660-d9450f859349" />
-<div class="info">
-<strong>X-Burger</strong>
-<span class="price">R$ 18,00</span>
-<button class="add" onclick="event.stopPropagation();openProduct({name:'X-Burger',price:18,img:'https://images.unsplash.com/photo-1550547660-d9450f859349'})">Adicionar</button>
-</div>
-</div>
-
-<div class="card">
-<img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd" />
-<div class="info">
-<strong>Combo X-Burger + Refri</strong>
-<span class="price" data-price="22">R$ 22,00</span>
-<p style="font-size:13px;color:var(--muted)">Economize no combo</p>
-<div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div>
-<button class="add" onclick="add(this,'Combo X-Burger + Refri')">Adicionar</button>
-</div></div>
-</div>
-
-<h3>Bebidas</h3>
-<div class="items">
-<div class="card"><div class="info"><strong>Refrigerante Lata</strong><span class="price" data-price="6">R$ 6,00</span><div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div><button class="add" onclick="add(this,'Refrigerante')">Adicionar</button></div></div>
-</div>
-</div>
-
-<!-- MODAL PRODUTO -->
-<div class="product-modal" id="productModal" onclick="closeProduct(event)">
-<div class="product-box">
-<img id="pImg" />
-<div class="product-content">
-<div class="product-header">
-<h3 id="pName"></h3>
-<span class="price" id="pPrice"></span>
-<button class="close-btn" onclick="closeProduct()">✕</button>
-</div>
-
-<div class="extras">
-<label><input type="checkbox" value="Bacon|4"> Bacon +R$4</label>
-<label><input type="checkbox" value="Cheddar|3"> Cheddar +R$3</label>
-<label><input type="checkbox" value="Ovo|2"> Ovo +R$2</label>
-</div>
-
-<div>
-<span style="font-size:13px;color:var(--muted)">Observações</span>
-<textarea class="obs" placeholder="Ex: sem cebola, ponto da carne"></textarea>
-</div>
-
-<div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div>
-</div>
-
-<div class="product-footer">
-<button class="send" onclick="addFromModal()">Adicionar ao carrinho</button>
-</div>
-</div>
-</div>
-
-<!-- PAGAMENTO -->
-<div class="section" id="pagamento-area">
-<h2>Pagamento</h2>
-<p style="color:var(--muted);font-size:14px">Escolha a forma de pagamento</p>
-<select id="pagamento">
-<option>PIX</option>
-<option>Dinheiro</option>
-<option>Cartão</option>
-</select>
-</div>
-
-
-
-</div>
-
-<div class="card">
-<img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd" />
-<div class="info">
-<strong>Combo X-Burger + Refri</strong>
-<span class="price" data-price="22">R$ 22,00</span>
-<p style="font-size:13px;color:var(--muted)">Economize no combo</p>
-<div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div>
-<button class="add" onclick="add(this,'Combo X-Burger + Refri')">Adicionar</button>
-</div></div>
-</div></div>
-
-<div class="section">
-<h2>Bebidas</h2>
-<div class="items">
-<div class="card"><div class="info"><strong>Refrigerante Lata</strong><span class="price" data-price="6">R$ 6,00</span><div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div><button class="add" onclick="add(this,'Refrigerante')">Adicionar</button></div></div>
-</div></div>
-
-<div class="section">
-<h2>Pagamento</h2>
-<select id="pagamento"><option>PIX</option><option>Dinheiro</option><option>Cartão</option></select>
-</div>
-
-
-
+  <div class="section" id="pagamento">
+    <h2>Pagamento</h2>
+    <select id="pagamento">
+      <option>PIX</option>
+      <option>Dinheiro</option>
+      <option>Cartão</option>
+    </select>
+  </div>
 </div>
 
 <div class="cart">
-<div class="cart-items" id="cart"></div>
-<div class="total">Total: R$ <span id="total">0.00</span></div>
-<input id="nome" placeholder="Nome do cliente" />
-<button class="send" onclick="zap()">Enviar no WhatsApp</button>
+  <div class="cart-items" id="cart"></div>
+  <div class="total">Total: R$ <span id="total">0.00</span></div>
+  <input id="nome" placeholder="Nome do cliente" />
+  <button class="send" onclick="zap()">Enviar no WhatsApp</button>
+</div>
+
+<div class="product-modal" id="productModal" onclick="closeProduct(event)">
+  <div class="product-box">
+    <img id="pImg" />
+    <div class="product-content">
+      <div class="product-header">
+        <h3 id="pName"></h3>
+        <span class="price" id="pPrice"></span>
+        <button class="close-btn" onclick="closeProduct()">✕</button>
+      </div>
+      <div class="extras">
+        <label><input type="checkbox" value="Bacon|4"> Bacon +R$4</label>
+        <label><input type="checkbox" value="Cheddar|3"> Cheddar +R$3</label>
+        <label><input type="checkbox" value="Ovo|2"> Ovo +R$2</label>
+      </div>
+      <textarea class="obs" placeholder="Observações"></textarea>
+      <div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div>
+    </div>
+    <div class="product-footer">
+      <button class="send" onclick="addFromModal()">Adicionar ao carrinho</button>
+    </div>
+  </div>
 </div>
 
 <script>
-let currentProduct=null;
-let cart=[],total=0,delivery=5;
+let cart = [];
+let total = 0;
+let currentProduct = null;
+
+function toggleMenu(){document.getElementById('sideMenu').classList.toggle('active')}
 function q(b,d){let s=b.parentElement.querySelector('span');let v=+s.innerText+d;if(v<1)v=1;s.innerText=v}
-function add(btn,nome){
-const info=btn.parentElement;
-let base=+info.querySelector('.price').dataset.price;
-let qty=+info.querySelector('.qty span').innerText;
-cart.push(`${qty}x ${nome}`);
-total+=base*qty;
-render()
-}
-function render(){document.getElementById('cart').innerHTML=cart.map(i=>`<div class='cart-item'>${i}</div>`).join('');document.getElementById('total').innerText=(total+delivery).toFixed(2)}
-function zap(){let nome=document.getElementById('nome').value;let pg=document.getElementById('pagamento').value;let msg=`Pedido - ${nome}%0A${cart.join('%0A')}%0APagamento: ${pg}%0ATotal: R$ ${(total+delivery).toFixed(2)}`;window.open(`https://wa.me/5599999999999?text=${msg}`,'_blank')}
-
-function openProduct(p){
-currentProduct=p;
-document.getElementById('pImg').src=p.img;
-document.getElementById('pName').innerText=p.name;
-document.getElementById('pPrice').innerText=`R$ ${p.price.toFixed(2)}`;
-document.querySelectorAll('#productModal input[type=checkbox]').forEach(i=>i.checked=false);
-document.querySelector('#productModal .obs').value='';
-document.querySelector('#productModal .qty span').innerText=1;
-document.getElementById('productModal').style.display='block';
-}
+function openProduct(p){currentProduct=p;document.getElementById('pImg').src=p.img;document.getElementById('pName').innerText=p.name;document.getElementById('pPrice').innerText=`R$ ${p.price.toFixed(2)}`;document.querySelectorAll('#productModal input').forEach(i=>i.checked=false);document.querySelector('.obs').value='';document.querySelector('#productModal .qty span').innerText=1;document.getElementById('productModal').style.display='block'}
 function closeProduct(e){if(!e||e.target.id==='productModal')document.getElementById('productModal').style.display='none'}
-function addFromModal(){
-let base=currentProduct.price;
-let qty=+document.querySelector('#productModal .qty span').innerText;
-let extraTxt='';
-document.querySelectorAll('#productModal input:checked').forEach(e=>{let[n,p]=e.value.split('|');base+=+p;extraTxt+=` + ${n}`});
-let obs=document.querySelector('#productModal .obs').value;
-let obsTxt=obs?` (Obs: ${obs})`:'';
-cart.push(`${qty}x ${currentProduct.name}${extraTxt}${obsTxt}`);
-total+=base*qty;
-render();
-closeProduct();
-}
-
-function checkStatus(){let h=new Date().getHours();let s=document.getElementById('status');if(h>=8&&h<=18){s.innerText='ABERTO';s.className='status open'}else{s.innerText='FECHADO';s.className='status closed'}}
-checkStatus();
+function addFromModal(){let base=currentProduct.price;let qty=+document.querySelector('#productModal .qty span').innerText;let extra='';document.querySelectorAll('#productModal input:checked').forEach(e=>{let[n,p]=e.value.split('|');base+=+p;extra+=` + ${n}`});let obs=document.querySelector('.obs').value;cart.push({name:currentProduct.name,qty,extra,obs,price:base});total+=base*qty;render();closeProduct()}
+function render(){let cartDiv=document.getElementById('cart');cartDiv.innerHTML='';cart.forEach(item=>{let obsText=item.obs?` (Obs: ${item.obs})` : '';cartDiv.innerHTML+=`<div class='cart-item'>${item.qty}x ${item.name}${item.extra}${obsText} - R$ ${(item.price*item.qty).toFixed(2)}</div>`});document.getElementById('total').innerText=total.toFixed(2)}
+function addDrink(name,price){let existing=cart.find(i=>i.name===name&&!i.extra);if(existing){existing.qty+=1}else{cart.push({name,qty:1,extra:'',obs:'',price})}total+=price;render()}
+function zap(){let nome=document.getElementById('nome').value||'Cliente';let pg=document.getElementById('pagamento').value;let msg=`Pedido - ${nome}%0A`;cart.forEach(item=>{let obsText=item.obs?` (Obs: ${item.obs})`:'';msg+=`${item.qty}x ${item.name}${item.extra}${obsText} - R$ ${(item.price*item.qty).toFixed(2)}%0A`});msg+=`Pagamento: ${pg}%0ATotal: R$ ${total.toFixed(2)}`;window.open(`https://wa.me/5599999999999?text=${msg}`,'_blank')}
+function checkStatus(){let h=new Date().getHours();let s=document.getElementById('status');if(h>=8&&h<=18){s.innerText='ABERTO';s.className='status open'}else{s.innerText='FECHADO';s.className='status closed'}}checkStatus();
 </script>
 </body>
 </html>
-
-
