@@ -22,15 +22,28 @@ header h1{margin:0;font-size:18px;letter-spacing:2px}
 .price{color:var(--secondary);font-weight:700}
 .qty{display:flex;align-items:center;gap:10px}
 .qty button{width:28px;height:28px;border-radius:50%;border:none;background:var(--secondary);font-weight:700}
-textarea,input,select{width:100%;border-radius:10px;border:none;padding:8px}
+textarea,input,select{width:100%;border-radius:12px;border:1px solid #222;padding:10px;background:#111;color:#fff}
+textarea{resize:none;min-height:60px}
 .add{background:var(--primary);border:none;border-radius:12px;padding:10px;color:#fff;font-weight:600}
-.extras label{display:block;font-size:13px}
+.extras{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.extras label{display:flex;align-items:center;gap:8px;font-size:13px;background:#111;padding:8px;border-radius:10px;border:1px solid #222;cursor:pointer}
+.extras input{accent-color:var(--secondary)}
 .cart{position:fixed;bottom:0;left:0;width:100%;background:#000;padding:14px;border-top:1px solid #222}
 .cart-items{max-height:120px;overflow:auto;font-size:13px}
 .cart-item{border-bottom:1px solid #222;padding:6px 0}
 .total{font-weight:600;margin:6px 0}
 .send{background:var(--secondary);border:none;border-radius:14px;padding:12px;width:100%;font-weight:700}
 .admin h3{margin-top:0}
+/* MODAL PRODUTO */
+.product-modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:50}
+.product-box{position:absolute;bottom:0;width:100%;background:#000;border-radius:22px 22px 0 0;max-height:90%;overflow:auto;animation:up .3s}
+.product-box img{width:100%;height:220px;object-fit:cover}
+.product-content{padding:16px;display:flex;flex-direction:column;gap:12px}
+.product-header{display:flex;justify-content:space-between;align-items:center}
+.product-header h3{margin:0}
+.close-btn{background:none;border:none;color:#fff;font-size:22px}
+.product-footer{position:sticky;bottom:0;background:#000;padding:12px;border-top:1px solid #222}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -48,19 +61,14 @@ textarea,input,select{width:100%;border-radius:10px;border:none;padding:8px}
 
 <h3>Hambúrgueres</h3>
 <div class="items">
-<div class="card">
+<div class="card" onclick="openProduct({name:'X-Burger',price:18,img:'https://images.unsplash.com/photo-1550547660-d9450f859349'})">
 <img src="https://images.unsplash.com/photo-1550547660-d9450f859349" />
 <div class="info">
 <strong>X-Burger</strong>
-<span class="price" data-price="18">R$ 18,00</span>
-<div class="extras">
-<label><input type="checkbox" value="Bacon|4"> Bacon +R$4</label>
-<label><input type="checkbox" value="Cheddar|3"> Cheddar +R$3</label>
-<label><input type="checkbox" value="Ovo|2"> Ovo +R$2</label>
+<span class="price">R$ 18,00</span>
+<button class="add" onclick="event.stopPropagation();openProduct({name:'X-Burger',price:18,img:'https://images.unsplash.com/photo-1550547660-d9450f859349'})">Adicionar</button>
 </div>
-<div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div>
-<button class="add" onclick="add(this,'X-Burger')">Adicionar</button>
-</div></div>
+</div>
 
 <div class="card">
 <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd" />
@@ -76,6 +84,37 @@ textarea,input,select{width:100%;border-radius:10px;border:none;padding:8px}
 <h3>Bebidas</h3>
 <div class="items">
 <div class="card"><div class="info"><strong>Refrigerante Lata</strong><span class="price" data-price="6">R$ 6,00</span><div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div><button class="add" onclick="add(this,'Refrigerante')">Adicionar</button></div></div>
+</div>
+</div>
+
+<!-- MODAL PRODUTO -->
+<div class="product-modal" id="productModal" onclick="closeProduct(event)">
+<div class="product-box">
+<img id="pImg" />
+<div class="product-content">
+<div class="product-header">
+<h3 id="pName"></h3>
+<span class="price" id="pPrice"></span>
+<button class="close-btn" onclick="closeProduct()">✕</button>
+</div>
+
+<div class="extras">
+<label><input type="checkbox" value="Bacon|4"> Bacon +R$4</label>
+<label><input type="checkbox" value="Cheddar|3"> Cheddar +R$3</label>
+<label><input type="checkbox" value="Ovo|2"> Ovo +R$2</label>
+</div>
+
+<div>
+<span style="font-size:13px;color:var(--muted)">Observações</span>
+<textarea class="obs" placeholder="Ex: sem cebola, ponto da carne"></textarea>
+</div>
+
+<div class="qty"><button onclick="q(this,-1)">-</button><span>1</span><button onclick="q(this,1)">+</button></div>
+</div>
+
+<div class="product-footer">
+<button class="send" onclick="addFromModal()">Adicionar ao carrinho</button>
+</div>
 </div>
 </div>
 
@@ -128,14 +167,48 @@ textarea,input,select{width:100%;border-radius:10px;border:none;padding:8px}
 </div>
 
 <script>
+let currentProduct=null;
 let cart=[],total=0,delivery=5;
 function q(b,d){let s=b.parentElement.querySelector('span');let v=+s.innerText+d;if(v<1)v=1;s.innerText=v}
-function add(btn,nome){const info=btn.parentElement;let base=+info.querySelector('.price').dataset.price;let qty=+info.querySelector('.qty span').innerText;let extraTxt='';info.querySelectorAll('input:checked').forEach(e=>{let [n,p]=e.value.split('|');base+=+p;extraTxt+=` + ${n}`});cart.push(`${qty}x ${nome}${extraTxt}`);total+=base*qty;render()}
+function add(btn,nome){
+const info=btn.parentElement;
+let base=+info.querySelector('.price').dataset.price;
+let qty=+info.querySelector('.qty span').innerText;
+cart.push(`${qty}x ${nome}`);
+total+=base*qty;
+render()
+}
 function render(){document.getElementById('cart').innerHTML=cart.map(i=>`<div class='cart-item'>${i}</div>`).join('');document.getElementById('total').innerText=(total+delivery).toFixed(2)}
 function zap(){let nome=document.getElementById('nome').value;let pg=document.getElementById('pagamento').value;let msg=`Pedido - ${nome}%0A${cart.join('%0A')}%0APagamento: ${pg}%0ATotal: R$ ${(total+delivery).toFixed(2)}`;window.open(`https://wa.me/5599999999999?text=${msg}`,'_blank')}
+
+function openProduct(p){
+currentProduct=p;
+document.getElementById('pImg').src=p.img;
+document.getElementById('pName').innerText=p.name;
+document.getElementById('pPrice').innerText=`R$ ${p.price.toFixed(2)}`;
+document.querySelectorAll('#productModal input[type=checkbox]').forEach(i=>i.checked=false);
+document.querySelector('#productModal .obs').value='';
+document.querySelector('#productModal .qty span').innerText=1;
+document.getElementById('productModal').style.display='block';
+}
+function closeProduct(e){if(!e||e.target.id==='productModal')document.getElementById('productModal').style.display='none'}
+function addFromModal(){
+let base=currentProduct.price;
+let qty=+document.querySelector('#productModal .qty span').innerText;
+let extraTxt='';
+document.querySelectorAll('#productModal input:checked').forEach(e=>{let[n,p]=e.value.split('|');base+=+p;extraTxt+=` + ${n}`});
+let obs=document.querySelector('#productModal .obs').value;
+let obsTxt=obs?` (Obs: ${obs})`:'';
+cart.push(`${qty}x ${currentProduct.name}${extraTxt}${obsTxt}`);
+total+=base*qty;
+render();
+closeProduct();
+}
 
 function checkStatus(){let h=new Date().getHours();let s=document.getElementById('status');if(h>=8&&h<=18){s.innerText='ABERTO';s.className='status open'}else{s.innerText='FECHADO';s.className='status closed'}}
 checkStatus();
 </script>
 </body>
 </html>
+
+
